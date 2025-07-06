@@ -1,0 +1,9 @@
+services:
+  predict-from-model:
+    build:
+      context: ./app
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+      - ../Iot-class-2025-train-from-data/app/fan_speed_model.pkl:/app/fan_speed_model.pkl
