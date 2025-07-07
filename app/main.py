@@ -25,7 +25,7 @@ logging.basicConfig(
 # Load configuration from environment variables
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "localhost:9092")
 KAFKA_INPUT_TOPIC = os.getenv("KAFKA_INPUT_TOPIC", "event-frames-model")
-KAFKA_OUTPUT_TOPIC = os.getenv("KAFKA_OUTPUT_TOPIC", "fan-speed-batch-prediction")
+KAFKA_OUTPUT_TOPIC = os.getenv("KAFKA_OUTPUT_TOPIC", "fan-speed-prediction")
 MODEL_LOCATION = os.getenv("MODEL_LOCATION", "/app/fan_speed_model.pkl")
 
 INFLUX_URL = os.getenv("INFLUX_URL")
@@ -67,9 +67,6 @@ except Exception as e:
     logging.error(f"❌ Failed to setup QuixStreams application or topics: {e}")
     exit(1)
 
-y_true = []
-y_pred = []
-
 def handle_message(row):
     try:
         sensor_name = row.get("name", "")
@@ -90,9 +87,6 @@ def handle_message(row):
         if sensor_name == "iot_sensor_0":
             actual_fan_speed = payload.get("fan_speed", None)
             if actual_fan_speed is not None:
-                y_true.append(actual_fan_speed)
-                y_pred.append(prediction)
-
                 logging.info(f"[Model Sensor] {sensor_name} Actual fan_speed: {actual_fan_speed}, Predicted: {prediction}")
 
                 # You can calculate and log MAE or other metrics here if you want
